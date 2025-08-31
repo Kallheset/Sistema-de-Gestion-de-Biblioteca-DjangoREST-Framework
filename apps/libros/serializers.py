@@ -33,3 +33,8 @@ class LibroSerializer(serializers.ModelSerializer):
             'calificacion', 'stock'
         ]
         read_only_fields = ['disponible']
+
+    def validate_isbn(self, value):
+        if len(value) != 13 or not value.isdigit():
+            raise serializers.ValidationError('El ISBN debe tener 13 dígitos numéricos.')
+        return value

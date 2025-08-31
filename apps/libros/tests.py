@@ -75,6 +75,21 @@ class LibrosAPITest(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertTrue(Libro.objects.filter(titulo="Nuevo Libro").exists())
 
+    def test_crear_libro_isbn_invalido(self):
+        url = reverse('libro-list')
+        data = {
+            "titulo": "Libro ISBN inválido",
+            "autor_id": self.autor.id,
+            "categoria_id": self.categoria.id,
+            "isbn": "1234567890",  # Menos de 13 dígitos
+            "fecha_publicacion": "2020-01-01",
+            "descripcion": "ISBN incorrecto",
+            "stock": 5
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(Libro.objects.filter(titulo="Libro ISBN inválido").exists())
+
     def test_update_libro(self):
         url = reverse('libro-detail', args=[self.libro.id])
         data = {
