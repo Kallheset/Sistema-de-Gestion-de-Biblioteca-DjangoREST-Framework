@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from rest_framework import viewsets, filters
-from .models import Categoria, Libro, Autor
+from .models import Categoria, Libro
+from apps.autores.models import Autor
 from .serializers import CategoriaSerializer, LibroSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
