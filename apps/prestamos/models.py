@@ -22,7 +22,7 @@ class Prestamo(models.Model):
         verbose_name_plural = 'Préstamos'
     
     def __str__(self):
-        return f'Prestamo de {self.libro.titulo} a {self.usuario.username}'
+        return f'Préstamo de {self.libro.titulo} a {self.usuario.username}'
     
     @property
     def devuelto(self):
