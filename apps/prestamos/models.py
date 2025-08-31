@@ -47,7 +47,12 @@ class Prestamo(models.Model):
             errors['usuario'] = 'El usuario ya alcanzó el límite de préstamos permitidos.'
         
         # Validar fecha de devolución esperada
-        if self.fecha_devolucion_esperada and self.fecha_devolucion_esperada < timezone.now().date():
+        # Solo se considera inválida si la fecha ya pasó y el préstamo aún no fue devuelto
+        if (
+            self.fecha_devolucion_esperada
+            and self.fecha_devolucion_esperada < timezone.now().date()
+            and self.fecha_devolucion is None
+        ):
             errors['fecha_devolucion_esperada'] = 'La fecha de devolución esperada no puede ser en el pasado.'
         
         if errors:

@@ -48,7 +48,19 @@ class PrestamosAPITest(APITestCase):
     def test_devolver_prestamo(self):
         url = reverse('prestamo-devolver', args=[self.prestamo.id])
         response = self.client.post(url)
-        self.assertIn(response.status_code, [200, 302]) 
+        self.assertIn(response.status_code, [200, 302])
+        self.prestamo.refresh_from_db()
+        self.assertIsNotNone(self.prestamo.fecha_devolucion)
+
+    def test_devolver_prestamo_con_fecha_vencida(self):
+        # Simular que la fecha de devolución esperada ya pasó
+        Prestamo.objects.filter(id=self.prestamo.id).update(
+            fecha_devolucion_esperada=date.today() - timedelta(days=1)
+        )
+
+        url = reverse('prestamo-devolver', args=[self.prestamo.id])
+        response = self.client.post(url)
+        self.assertIn(response.status_code, [200, 302])
         self.prestamo.refresh_from_db()
         self.assertIsNotNone(self.prestamo.fecha_devolucion)
 
