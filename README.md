@@ -463,8 +463,8 @@ Este proyecto demuestra:
 **Tu Nombre**
 
 - GitHub: [@Kallheset](https://github.com/Kallheset)
-- LinkedIn: [Tu LinkedIn]
-- Email: <tu@email.com>
+- LinkedIn: [www.linkedin.com/in/argenis-manzanares-108b4a349]
+- Email: <argenis010@gmail.com>
 
 ---
 
