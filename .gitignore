@@ -144,3 +144,7 @@ pip-delete-this-directory.txt
 # MySQL dumps
 *.sql
 *.sql.gz
+
+# skills
+.agents/
+.skills/
