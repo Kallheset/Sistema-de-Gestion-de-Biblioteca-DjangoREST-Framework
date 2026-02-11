@@ -1,136 +1,174 @@
 {% extends 'base.html' %}
 
+{% block title %}Mi Perfil - Biblioteca Premium{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <!-- Columna de información del usuario -->
-        <div class="col-md-4">
-            <div class="card mb-4">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        {% if usuario.perfil.avatar %}
-                            <img src="{{ usuario.perfil.avatar.url }}" alt="Avatar" class="img-thumbnail rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
-                        {% else %}
-                            <i class="fas fa-user-circle fa-5x text-primary"></i>
-                        {% endif %}
+<div class="container mb-5 animate-fade-in">
+    <div class="row g-4">
+        <!-- Profile info -->
+        <div class="col-lg-4">
+            <div class="card-modern p-4 border-0 shadow-sm text-center h-100">
+                <div class="position-relative d-inline-block mb-4">
+                    {% if usuario.perfil.avatar %}
+                    <img src="{{ usuario.perfil.avatar.url }}" alt="Avatar"
+                        class="rounded-circle shadow-lg border border-4 border-white"
+                        style="width: 120px; height: 120px; object-fit: cover;">
+                    {% else %}
+                    <div class="rounded-circle bg-accent-subtle text-primary d-flex align-items-center justify-content-center shadow-lg border border-4 border-white mx-auto"
+                        style="width: 120px; height: 120px;">
+                        <i class="fas fa-user fa-3x"></i>
                     </div>
-                    <h3 class="card-title">{{ usuario.get_full_name|default:usuario.username }}</h3>
-<p class="text-muted">@{{ usuario.username }}</p>
-<hr>
-<p><i class="fas fa-envelope me-2"></i> {{ usuario.email }}</p>
-<p><i class="fas fa-calendar-alt me-2"></i> Miembro desde: {{ usuario.date_joined|date:"d/m/Y" }}</p>
-
-<!-- Tarjeta de información de perfil -->
-<div class="card mt-3">
-    <div class="card-header bg-light">
-        <strong>Información de perfil</strong>
-    </div>
-    <div class="card-body text-start">
-        <p><i class="fas fa-map-marker-alt me-2"></i> <strong>Dirección:</strong> {{ usuario.perfil.direccion|default:'No especificada' }}</p>
-        <p><i class="fas fa-phone me-2"></i> <strong>Teléfono:</strong> {{ usuario.perfil.telefono|default:'No especificado' }}</p>
-        <p><i class="fas fa-user-tag me-2"></i> <strong>Apodo:</strong> {{ usuario.perfil.apodo|default:'No especificado' }}</p>
-
-    </div>
-</div>
-<a href="{% url 'usuarios:editar_perfil' %}" class="btn btn-outline-primary btn-sm mt-2">
-    <i class="fas fa-edit me-1"></i> Editar perfil
-</a>
+                    {% endif %}
+                    <a href="{% url 'usuarios:editar_perfil' %}"
+                        class="position-absolute bottom-0 end-0 bg-white text-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                        style="width: 36px; height: 36px; border: 1px solid #eee;">
+                        <i class="fas fa-camera small"></i>
+                    </a>
                 </div>
-            </div>
 
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Estadísticas</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Préstamos activos:</span>
-                        <span class="badge bg-primary rounded-pill">{{ prestamos_activos|length }}</span>
+                <h3 class="h4 fw-bold mb-1">{{ usuario.get_full_name|default:usuario.username }}</h3>
+                <p class="text-secondary small mb-4">@{{ usuario.username }}</p>
+
+                <div class="text-start mb-4">
+                    <div class="d-flex align-items-center gap-3 mb-3 p-3 bg-light rounded-3">
+                        <i class="fas fa-envelope text-primary opacity-75"></i>
+                        <div class="overflow-hidden">
+                            <div class="small fw-bold text-muted" style="font-size: 0.6rem;">EMAIL</div>
+                            <div class="small fw-medium text-dark text-truncate">{{ usuario.email }}</div>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Total de préstamos:</span>
-                        <span class="badge bg-secondary rounded-pill">
-                            {{ prestamos_activos|length|add:historial_prestamos|length }}
-                        </span>
+                    <div class="text-start mb-4">
+                        {% with p=usuario.perfil.telefono d=usuario.perfil.direccion %}
+                        <div class="d-flex align-items-center gap-3 mb-3 p-3 bg-accent rounded-3">
+                            <i class="fas fa-phone text-primary opacity-75"></i>
+                            <div>
+                                <div class="small fw-bold text-muted" style="font-size: 0.6rem;">TELÉFONO</div>
+                                <div class="small fw-medium text-dark">
+                                    {% if p %}{{ p }}{% else %}No especificado{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 p-3 bg-accent rounded-3">
+                            <i class="fas fa-map-marker-alt text-primary opacity-75"></i>
+                            <div>
+                                <div class="small fw-bold text-muted" style="font-size: 0.6rem;">DIRECCIÓN</div>
+                                <div class="small fw-medium text-dark">
+                                    {% if d %}{{ d }}{% else %}No especificada{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endwith %}
                     </div>
                 </div>
+
+                <a href="{% url 'usuarios:editar_perfil' %}" class="btn btn-primary w-100 py-2 shadow-sm">
+                    <i class="fas fa-edit me-2"></i> Editar Perfil
+                </a>
             </div>
         </div>
 
-        <!-- Columna de préstamos -->
-        <div class="col-md-8">
-            <!-- Préstamos activos -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Préstamos Activos</h5>
-                    <span class="badge bg-light text-primary">{{ prestamos_activos|length }}</span>
+        <!-- content areas -->
+        <div class="col-lg-8">
+            <div class="row g-4 mb-4">
+                <div class="col-sm-6">
+                    <div class="stat-card border-0 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="text-secondary small fw-bold mb-1">PRÉSTAMOS ACTIVOS</h5>
+                                <div class="h3 fw-bold mb-0 text-primary">{{ prestamos_activos|length }}</div>
+                            </div>
+                            <div class="stat-icon m-0">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    {% if prestamos_activos %}
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Libro</th>
-                                        <th>Fecha de préstamo</th>
-                                        <th>Devolución</th>
-                                        <th>Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for prestamo in prestamos_activos %}
-                                    <tr>
-                                        <td>
-                                            <a href="#" class="text-decoration-none">
-                                                {{ prestamo.libro.titulo }}
-                                            </a>
-                                        </td>
-                                        <td>{{ prestamo.fecha_prestamo|date:"d/m/Y" }}</td>
-                                        <td>{{ prestamo.fecha_devolucion_esperada|date:"d/m/Y" }}</td>
-                                        <td>
-                                            {% if hoy > prestamo.fecha_devolucion_esperada %}
-                                                <span class="badge bg-danger">Atrasado</span>
-                                            {% else %}
-                                                <span class="badge bg-success">En tiempo</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                <div class="col-sm-6">
+                    <div class="stat-card border-0 shadow-sm" style="border-left-color: var(--success);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="text-secondary small fw-bold mb-1">TOTAL LECTURAS</h5>
+                                <div class="h3 fw-bold mb-0 text-success">{{ historial_prestamos|length }}</div>
+                            </div>
+                            <div class="stat-icon m-0" style="background-color: #ecfdf5; color: var(--success);">
+                                <i class="fas fa-check-double"></i>
+                            </div>
                         </div>
-                    {% else %}
-                        <div class="alert alert-info mb-0">
-                            No tienes préstamos activos en este momento.
-                        </div>
-                    {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <!-- Historial de préstamos -->
-            <div class="card">
-                <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Historial Reciente</h5>
+            <div class="card-modern border-0 shadow-sm bg-white overflow-hidden mb-4">
+                <div
+                    class="card-header bg-accent py-3 px-4 border-bottom d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 fw-bold">Préstamos en Curso</h5>
+                    <i class="fas fa-clock text-muted opacity-50"></i>
                 </div>
-                <div class="card-body">
-                    {% if historial_prestamos %}
-                        <div class="list-group">
-                            {% for prestamo in historial_prestamos %}
-                            <div class="list-group-item">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">{{ prestamo.libro.titulo }}</h6>
-                                    <small class="text-muted">Devuelto el {{ prestamo.fecha_devolucion|date:"d/m/Y" }}</small>
-                                </div>
-                                <p class="mb-1">
-                                    Prestado el {{ prestamo.fecha_prestamo|date:"d/m/Y" }} - 
-                                    Devuelto el {{ prestamo.fecha_devolucion|date:"d/m/Y" }}
-                                </p>
-                            </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4 py-3 border-0 small fw-bold text-muted">LIBRO</th>
+                                <th class="py-3 border-0 small fw-bold text-muted">DEVOLUCIÓN</th>
+                                <th class="pe-4 py-3 border-0 small fw-bold text-muted text-end">ESTADO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prestamo in prestamos_activos %}
+                            <tr>
+                                <td class="ps-4 py-3">
+                                    <div class="fw-bold text-dark small">{{ prestamo.libro.titulo }}</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">por {{
+                                        prestamo.libro.autor.nombre }}</div>
+                                </td>
+                                <td class="py-3">
+                                    <div class="small fw-medium text-dark">{{ prestamo.fecha_devolucion_esperada|date:"d
+                                        M, Y" }}</div>
+                                </td>
+                                <td class="pe-4 py-3 text-end">
+                                    {% if hoy > prestamo.fecha_devolucion_esperada %}
+                                    <span
+                                        class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-1">Atrasado</span>
+                                    {% else %}
+                                    <span
+                                        class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-1">En
+                                        tiempo</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center py-5 text-muted small">
+                                    No tienes préstamos activos.
+                                </td>
+                            </tr>
                             {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-modern border-0 shadow-sm bg-accent overflow-hidden">
+                <div class="card-header bg-accent py-3 px-4 border-bottom">
+                    <h5 class="mb-0 fw-bold">Actividad Reciente</h5>
+                </div>
+                <div class="list-group list-group-flush list-group-modern px-3 py-2">
+                    {% for prestamo in historial_prestamos|slice:":5" %}
+                    <div class="list-group-item d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon bg-accent text-primary small" style="width: 32px; height: 32px;">
+                                <i class="fas fa-check small"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-dark small">{{ prestamo.libro.titulo }}</div>
+                                <div class="text-muted" style="font-size: 0.65rem;">Devuelto el {{
+                                    prestamo.fecha_devolucion|date:"d M, Y" }}</div>
+                            </div>
                         </div>
-                    {% else %}
-                        <p class="text-muted mb-0">No hay historial de préstamos recientes.</p>
-                    {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="p-4 text-center text-muted small">No hay actividad reciente.</div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

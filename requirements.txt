@@ -7,6 +7,7 @@ Django==5.2.1
 # --- Django REST Framework y extensiones ---
 djangorestframework==3.16.0  # API REST
 django-filter==25.1          # Filtros para DRF
+djangorestframework-simplejwt==5.5.1  # JWT Authentication
 
 # --- Documentación de APIs ---
 drf-spectacular==0.28.0      # Esquema y docs OpenAPI
@@ -52,4 +53,7 @@ sqlparse==0.5.3
 tzdata==2025.2
 uritemplate==4.2.0
 urllib3==2.4.0
-uvicorn==0.34.3
+# --- Pruebas y Calidad ---
+pytest==8.3.4
+pytest-django==4.10.0
+pytest-cov==6.0.0

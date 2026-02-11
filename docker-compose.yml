@@ -38,6 +38,8 @@ services:
         condition: service_healthy
     environment:
       - DEBUG=1
+      - SECRET_KEY=django-insecure-development-key-12345
+      - ALLOWED_HOSTS=localhost,127.0.0.1
       - DJANGO_SETTINGS_MODULE=biblioteca.settings
       - DB_ENGINE=django.db.backends.mysql
       - DB_NAME=biblioteca_db

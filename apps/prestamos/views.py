@@ -10,6 +10,8 @@ from apps.libros.models import Libro
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
+from .services import PrestamoService
+
 @login_required
 def lista_prestamos(request):
     prestamos_activos = Prestamo.objects.filter(usuario=request.user, fecha_devolucion__isnull=True)
@@ -24,11 +26,7 @@ def crear_prestamo(request):
     if request.method == 'POST':
         try:
             libro = Libro.objects.get(id=request.POST['libro'])
-            Prestamo.objects.create(
-                usuario=request.user,
-                libro=libro,
-                fecha_devolucion_esperada=timezone.now().date() + timezone.timedelta(days=7)
-            )
+            PrestamoService.crear_prestamo(request.user, libro)
             messages.success(request, 'Préstamo creado exitosamente.')
         except Exception as e:
             messages.error(request, str(e))
@@ -38,7 +36,7 @@ def crear_prestamo(request):
 def devolver_libro(request, prestamo_id):
     try:
         prestamo = Prestamo.objects.get(id=prestamo_id, usuario=request.user)
-        prestamo.devolver()
+        PrestamoService.devolver_libro(prestamo)
         messages.success(request, 'Libro devuelto exitosamente.')
     except Exception as e:
         messages.error(request, str(e))
@@ -49,23 +47,17 @@ class PrestamoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Prestamo.objects.filter(usuario=self.request.user)
+        return Prestamo.objects.filter(usuario=self.request.user).select_related('libro', 'libro__autor', 'libro__categoria')
 
     def perform_create(self, serializer):
-        libro = Libro.objects.get(id=self.request.data.get('libro_id'))
-        dias_prestamo = int(self.request.data.get('dias_prestamo', 7))
-        serializer.save(
-            usuario=self.request.user,
-            libro=libro,
-            fecha_devolucion_esperada=timezone.now().date() + timezone.timedelta(days=dias_prestamo)
-        )
-        return redirect('lista_prestamos')
+        # El serializador ya utiliza el servicio
+        serializer.save()
 
     @action(detail=True, methods=['post'])
     def devolver(self, request, pk=None):
         prestamo = self.get_object()
         try:
-            prestamo.devolver()
+            PrestamoService.devolver_libro(prestamo)
             return redirect('lista_prestamos')
         except Exception as e:
             return Response(

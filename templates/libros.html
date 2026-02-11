@@ -1,86 +1,169 @@
 {% extends 'base.html' %}
 
+{% block title %}Catálogo de Libros - Biblioteca Premium{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <h2>Lista de Libros</h2>
-    
-    <!-- Formulariio búsqueda -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get">
-                <div class="row">
-                    <div class="col-md-6">
-                        <input type="text" name="q" class="form-control" placeholder="Buscar libros..." value="{{ query }}">
+<div class="container mb-5 animate-fade-in">
+    <div class="row align-items-end g-4 mb-5">
+        <div class="col-lg-6">
+            <h1 class="h2 fw-extrabold tracking-tight mb-2">Catálogo de Libros</h1>
+            <p class="text-secondary mb-0">Explora nuestra colección y encuentra tu próxima lectura.</p>
+        </div>
+        <div class="col-lg-6">
+            <div class="card-modern p-3 border-0 shadow-sm">
+                <form method="get" class="row g-2">
+                    <div class="col-md-7">
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-0 pe-0">
+                                <i class="fas fa-search text-muted"></i>
+                            </span>
+                            <input type="text" name="q" class="form-control border-0 shadow-none"
+                                placeholder="Buscar por título, autor o ISBN..." value="{{ query }}">
+                        </div>
                     </div>
                     <div class="col-md-3">
-                        <select name="categoria" class="form-control">
-                            <option value="">Todas las categorías</option>
+                        <select name="categoria" class="form-select border-0 shadow-none bg-accent small fw-medium">
+                            <option value="">Categorías</option>
                             {% for categoria in categorias %}
-                            <option value="{{ categoria.id }}" {% if categoria_seleccionada == categoria.id %}selected{% endif %}>
-                                {{ categoria.nombre }}
-                            </option>
+                            {% if categoria.id == categoria_seleccionada %}
+                            <option value="{{ categoria.id }}" selected>{{ categoria.nombre }}</option>
+                            {% else %}
+                            <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                            {% endif %}
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100 py-2 shadow-sm">
+                            <i class="fas fa-filter d-md-none"></i>
+                            <span class="d-none d-md-inline">Filtrar</span>
+                        </button>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
-    <!-- Lista de libros -->
-    <div class="row">
+    <!-- Book Grid -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
         {% for libro in libros %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                {% if libro.imagen %}
-                <img src="{{ libro.imagen.url }}" class="card-img-top" alt="{{ libro.titulo }}" style="height: 200px; object-fit: cover;">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ libro.titulo }}</h5>
-                    <p class="card-text">
-                        <strong>Autor:</strong> {{ libro.autor.nombre }}<br>
-                        <strong>Categoría:</strong> {{ libro.categoria.nombre|default:"Sin categoría" }}<br>
-                        <strong>ISBN:</strong> {{ libro.isbn }}<br>
-                        <strong>Stock:</strong> {{ libro.stock }}<br>
-                        <strong>Estado:</strong> 
-                        {% if libro.disponible %}
-                        <span class="badge bg-success">Disponible</span>
+        <div class="col animate-fade-in">
+            <div class="card-modern h-100">
+                <div class="p-3">
+                    <div class="book-cover-wrapper shadow-sm mb-3">
+                        {% if libro.imagen %}
+                        <img src="{{ libro.imagen.url }}" class="book-cover-img" alt="{{ libro.titulo }}">
                         {% else %}
-                        <span class="badge bg-danger">No disponible</span>
-                        {% endif %}
-                    </p>
-                    {% if libro.descripcion %}
-                    <div class="mb-2">
-                        <strong>Descripción:</strong>
-                        <p class="text-muted">{{ libro.descripcion|truncatewords:30 }}</p>
-                    </div>
-                    {% endif %}
-                    {% if libro.disponible %}
-                    <form method="post" action="{% url 'crear_prestamo' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="libro" value="{{ libro.id }}">
-                        <div class="mb-2">
-                            <label for="dias_prestamo_{{ libro.id }}" class="form-label">Días de préstamo:</label>
-                            <select name="dias_prestamo" id="dias_prestamo_{{ libro.id }}" class="form-select">
-                                <option value="7">7 días</option>
-                                <option value="15">15 días</option>
-                                <option value="30">30 días</option>
-                            </select>
+                        <div
+                            class="w-100 h-100 bg-accent d-flex flex-column align-items-center justify-content-center text-muted opacity-50">
+                            <i class="fas fa-book fa-3x mb-2"></i>
+                            <span class="small fw-bold">SIN PORTADA</span>
                         </div>
-                        <button type="submit" class="btn btn-primary">Prestar</button>
-                    </form>
-                    {% endif %}
+                        {% endif %}
+                        <div class="position-absolute top-0 end-0 m-2">
+                            {% if libro.disponible %}
+                            <span class="badge bg-success shadow-sm">Disponible</span>
+                            {% else %}
+                            <span class="badge bg-danger shadow-sm">Agotado</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="px-1">
+                        <div class="text-primary small fw-bold mb-1 text-uppercase tracking-wider">
+                            {{ libro.categoria.nombre|default:"General" }}
+                        </div>
+                        <h5 class="h6 fw-bold mb-1 text-dark text-truncate" title="{{ libro.titulo }}">{{ libro.titulo
+                            }}</h5>
+                        <p class="text-muted small mb-3">por <span class="fw-semibold">{{ libro.autor.nombre }}</span>
+                        </p>
+
+                        <div class="d-flex align-items-center justify-content-between mb-3 bg-accent p-2 rounded-3">
+                            <div class="text-center flex-fill">
+                                <div class="small text-muted fw-bold" style="font-size: 0.65rem;">STOCK</div>
+                                <div class="fw-bold">{{ libro.stock }}</div>
+                            </div>
+                            <div class="vr mx-2 opacity-25"></div>
+                            <div class="text-center flex-fill">
+                                <div class="small text-muted fw-bold" style="font-size: 0.65rem;">ISBN</div>
+                                <div class="fw-bold small">{{ libro.isbn|slice:":4" }}...</div>
+                            </div>
+                        </div>
+
+                        {% if libro.disponible %}
+                        <button
+                            class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2"
+                            data-bs-toggle="modal" data-bs-target="#modalPrestamo{{ libro.id }}">
+                            <i class="fas fa-plus-circle small"></i> Solicitar Préstamo
+                        </button>
+                        {% else %}
+                        <button class="btn btn-light w-100 py-2 disabled text-muted border">
+                            <i class="fas fa-clock small me-1"></i> No Disponible
+                        </button>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Modal Préstamo -->
+        {% if libro.disponible %}
+        <div class="modal fade" id="modalPrestamo{{ libro.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold">Confirmar Préstamo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body py-4">
+                        <div class="text-center mb-4">
+                            <div class="stat-icon mx-auto mb-3" style="width: 64px; height: 64px;">
+                                <i class="fas fa-calendar-check fa-lg"></i>
+                            </div>
+                            <h6>¿Por cuántos días deseas el libro?</h6>
+                            <p class="text-muted small"><strong>{{ libro.titulo }}</strong> será reservado para ti.</p>
+                        </div>
+                        <form method="post" action="{% url 'crear_prestamo' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="libro" value="{{ libro.id }}">
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="dias_prestamo" id="dias{{ libro.id }}7"
+                                        value="7" checked>
+                                    <label class="btn btn-outline-primary w-100 py-3" for="dias{{ libro.id }}7">7
+                                        días</label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="dias_prestamo" id="dias{{ libro.id }}15"
+                                        value="15">
+                                    <label class="btn btn-outline-primary w-100 py-3" for="dias{{ libro.id }}15">15
+                                        días</label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="dias_prestamo" id="dias{{ libro.id }}30"
+                                        value="30">
+                                    <label class="btn btn-outline-primary w-100 py-3" for="dias{{ libro.id }}30">30
+                                        días</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-3 mt-4 shadow-lg">Confirmar
+                                Préstamo</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         {% empty %}
-        <div class="col-12">
-            <p class="text-center">No se encontraron libros.</p>
+        <div class="col-12 py-5 text-center">
+            <div class="stat-icon mx-auto mb-3 bg-accent text-muted opacity-50" style="width: 80px; height: 80px;">
+                <i class="fas fa-search-minus fa-2x"></i>
+            </div>
+            <h4 class="fw-bold">No se encontraron resultados</h4>
+            <p class="text-muted">Intenta con otros términos de búsqueda o categorías.</p>
+            <a href="{% url 'lista_libros' %}" class="btn btn-primary mt-3">Limpiar Filtros</a>
         </div>
         {% endfor %}
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

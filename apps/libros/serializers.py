@@ -33,6 +33,17 @@ class LibroSerializer(serializers.ModelSerializer):
             'calificacion', 'stock'
         ]
         read_only_fields = ['disponible']
+        extra_kwargs = {
+            'titulo': {'help_text': 'Título completo de la obra'},
+            'isbn': {'help_text': 'Código ISBN de 13 dígitos'},
+            'fecha_publicacion': {'help_text': 'Fecha de lanzamiento de esta edición'},
+            'descripcion': {'help_text': 'Resumen o sinopsis del libro'},
+            'paginas': {'help_text': 'Número total de páginas impresas'},
+            'calificacion': {'help_text': 'Puntuación promedio otorgada por los usuarios (1-5)'},
+            'stock': {'help_text': 'Número de ejemplares actualmente en bodega'},
+            'autor_id': {'help_text': 'ID del autor (para creación/actualización)'},
+            'categoria_id': {'help_text': 'ID de la categoría (para creación/actualización)'},
+        }
 
     def validate_isbn(self, value):
         if len(value) != 13 or not value.isdigit():

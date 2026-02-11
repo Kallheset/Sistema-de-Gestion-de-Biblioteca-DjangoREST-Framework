@@ -1,119 +1,140 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Dashboard - Biblioteca Premium{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row">
-        <div class="col-12 text-center mb-5">
-            <h1 class="display-4">Bienvenido a la Biblioteca</h1>
-            <p class="lead">Gestiona tu biblioteca de manera fácil y eficiente</p>
+<!-- Hero Section -->
+<div class="container mb-5 animate-fade-in">
+    <div class="card-modern p-5 border-0 shadow-lg text-center position-relative overflow-hidden"
+        style="background: var(--bg-card);">
+        <div class="position-absolute top-0 end-0 p-5 opacity-10 d-none d-lg-block">
+            <i class="fas fa-book-open fa-10x"></i>
+        </div>
+        <div class="position-relative">
+            <h1 class="display-4 fw-extrabold tracking-tight mb-3">Tu Biblioteca Personal</h1>
+            <p class="lead text-secondary mb-4 mx-auto" style="max-width: 600px;">
+                Descubre miles de títulos, gestiona tus préstamos y explora nuevas categorías en un solo lugar.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'lista_libros' %}" class="btn btn-primary btn-lg px-5 shadow-lg">Descubrir Ahora</a>
+                <a href="{% url 'lista_prestamos' %}" class="btn btn-white btn-lg px-5 border shadow-sm">Mis
+                    Préstamos</a>
+            </div>
         </div>
     </div>
-
-    <!-- Categorías y libros -->
-    <div class="container mb-5">
-  <h2 class="mb-4">Libros por categoría</h2>
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-    {% for item in categorias_con_libros %}
-      <div class="col">
-        <a href="{% url 'lista_libros' %}?categoria={{ item.categoria.id }}" style="text-decoration: none; color: inherit;">
-          <div class="card categoria-box h-100 border-0 shadow-sm categoria-link" style="cursor:pointer;">
-            <div class="card-header text-white text-center" style="background-color: #23408e;">
-  {% if item.categoria.imagen %}
-    <img src="{{ item.categoria.imagen.url }}" alt="{{ item.categoria.nombre }}" style="max-width:70px; max-height:70px; object-fit:cover; border-radius:50%; margin-bottom:10px;">
-  {% endif %}
-  <h5 class="mb-0">{{ item.categoria.nombre }}</h5>
-</div>
-            <div class="card-body">
-  <p class="card-text">{{ item.categoria.descripcion|default:"Sin descripción." }}</p>
-</div>
-          </div>
-        </a>
-      </div>
-    {% endfor %}
-  </div>
 </div>
 
-    <div class="row g-4">
-        <!-- Tarjeta de Libros -->
+<!-- Stats Container -->
+<div class="container mb-5">
+    <div class="row g-4 animate-fade-in" style="animation-delay: 0.1s;">
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
-                        <i class="fas fa-book fa-3x text-primary"></i>
+            <div class="stat-card border-0 shadow-sm h-100 d-flex align-items-center gap-4">
+                <div class="stat-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div>
+                    <h5 class="text-secondary small fw-bold mb-1">TOTAL LIBROS</h5>
+                    <div class="h3 fw-bold mb-0">{{ total_libros }}</div>
+                    <div class="text-success small fw-medium mt-1">
+                        <i class="fas fa-check-circle me-1"></i> {{ libros_disponibles }} disponibles
                     </div>
-                    <h3 class="h5">Libros en la biblioteca</h3>
-                    <h2 class="display-4 fw-bold text-primary">{{ total_libros }}</h2>
-                    <p class="text-muted">Libros disponibles: {{ libros_disponibles }}</p>
-                    <a href="{% url 'lista_libros' %}" class="btn btn-outline-primary">Ver libros</a>
                 </div>
             </div>
         </div>
-        
-        <!-- Tarjeta de Préstamos -->
+
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
-                        <i class="fas fa-exchange-alt fa-3x text-success"></i>
-                    </div>
-                    <h3 class="h5">Préstamos activos</h3>
-                    <h2 class="display-4 fw-bold text-success">
-                        {{ prestamos_activos|default:"0" }}
-                    </h2>
-                    <p class="text-muted">Gestiona los préstamos</p>
-                    <a href="{% url 'lista_prestamos' %}" class="btn btn-outline-success">Ver préstamos</a>
+            <div class="stat-card border-0 shadow-sm h-100 d-flex align-items-center gap-4"
+                style="border-left-color: var(--success);">
+                <div class="stat-icon" style="background-color: #ecfdf5; color: var(--success);">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div>
+                    <h5 class="text-secondary small fw-bold mb-1">PRÉSTAMOS ACTIVOS</h5>
+                    <div class="h3 fw-bold mb-0">{{ prestamos_activos|default:"0" }}</div>
+                    <div class="text-muted small mt-1">En curso actualmente</div>
                 </div>
             </div>
         </div>
-        
-        <!-- Tarjeta de Mi Perfil -->
+
         <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="rounded-circle d-inline-block mb-3 bg-info bg-opacity-10" style="width: 70px; height: 70px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-    {% if user.is_authenticated and user.perfil.avatar %}
-        <img src="{{ user.perfil.avatar.url }}" alt="Avatar de {{ user.username }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
-    {% else %}
-        <i class="fas fa-user fa-3x text-info"></i>
-    {% endif %}
-</div>
-                    <h3 class="h5">Mi Perfil</h3>
-                    <p class="text-muted">
-                        {% if user.is_authenticated %}
-                            Hola, {{ user.username }}
-                        {% else %}
-                            Inicia sesión para ver tu perfil
-                        {% endif %}
-                    </p>
+            <div class="stat-card border-0 shadow-sm h-100 d-flex align-items-center gap-4"
+                style="border-left-color: var(--warning);">
+                <div class="stat-icon" style="background-color: #fef3c7; color: var(--warning);">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div>
+                    <h5 class="text-secondary small fw-bold mb-1">PERFIL</h5>
                     {% if user.is_authenticated %}
-                        <a href="{% url 'usuarios:perfil' %}" class="btn btn-outline-info">Ver perfil</a>
+                    <div class="h3 fw-bold mb-0 text-truncate" style="max-width: 150px;">{{ user.username }}</div>
+                    <a href="{% url 'usuarios:perfil' %}"
+                        class="text-primary small fw-semibold text-decoration-none">Ver perfil <i
+                            class="fas fa-arrow-right ms-1"></i></a>
                     {% else %}
-                        <a href="{% url 'usuarios:login' %}" class="btn btn-outline-info">Iniciar sesión</a>
+                    <div class="h3 fw-bold mb-0">Visitante</div>
+                    <a href="{% url 'usuarios:login' %}"
+                        class="text-primary small fw-semibold text-decoration-none">Iniciar sesión</a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Acciones rápidas -->
-    <div class="row mt-5">
-        <div class="col-12 text-center mb-4">
-            <h2 class="h4">Acciones rápidas</h2>
-            <div class="d-flex justify-content-center gap-3 mt-3">
-                <a href="{% url 'crear_prestamo' %}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Nuevo Préstamo
-                </a>
-                <a href="{% url 'lista_libros' %}" class="btn btn-outline-secondary">
-                    <i class="fas fa-book me-2"></i>Ver Catálogo
-                </a>
-                {% if user.is_staff %}
-                <a href="{% url 'admin:index' %}" class="btn btn-outline-dark">
-                    <i class="fas fa-cog me-2"></i>Panel de Administración
-                </a>
-                {% endif %}
+</div>
+
+<!-- Categorías Section -->
+<div class="container mb-5 animate-fade-in" style="animation-delay: 0.2s;">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="h3 mb-0">Explorar por Categoría</h2>
+        <a href="{% url 'lista_libros' %}" class="btn btn-link text-primary fw-semibold p-0 text-decoration-none">Ver
+            todos <i class="fas fa-arrow-right ms-1"></i></a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 text-center">
+        {% for item in categorias_con_libros %}
+        <div class="col">
+            <a href="{% url 'lista_libros' %}?categoria={{ item.categoria.id }}" class="text-decoration-none">
+                <div class="card-modern h-100 p-4 border-0 shadow-sm text-center">
+                    <div class="category-icon mx-auto mb-3 shadow-sm"
+                        style="width: 80px; height: 80px; border-radius: 20px; overflow: hidden;">
+                        {% if item.categoria.imagen %}
+                        <img src="{{ item.categoria.imagen.url }}" alt="{{ item.categoria.nombre }}"
+                            class="w-100 h-100 object-fit-cover">
+                        {% else %}
+                        <div
+                            class="w-100 h-100 bg-accent d-flex align-items-center justify-content-center text-primary">
+                            <i class="fas fa-bookmark fa-2x"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <h5 class="h6 fw-bold text-dark mb-1">{{ item.categoria.nombre }}</h5>
+                    <p class="text-muted small mb-0">{{ item.libros.count }} títulos</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="container mb-5 animate-fade-in" style="animation-delay: 0.3s;">
+    <div class="bg-dark p-4 rounded-4 shadow-lg d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="stat-icon bg-accent-subtle text-white rounded-pill">
+                <i class="fas fa-bolt"></i>
             </div>
+            <div>
+                <h4 class="h5 text-white mb-0">Acciones Rápidas</h4>
+                <p class="text-white opacity-50 small mb-0">Optimiza tu tiempo con accesos directos.</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'crear_prestamo' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i> Nuevo Préstamo
+            </a>
+            {% if user.is_staff %}
+            <a href="{% url 'admin:index' %}" class="btn btn-outline-light">
+                <i class="fas fa-tools me-1"></i> Admin
+            </a>
+            {% endif %}
         </div>
     </div>
 </div>

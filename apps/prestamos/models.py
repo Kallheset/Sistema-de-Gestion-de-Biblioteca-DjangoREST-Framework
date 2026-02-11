@@ -36,46 +36,18 @@ class Prestamo(models.Model):
         ).count()
 
     def clean(self):
+        # Mantenemos validaciones básicas para compatibilidad con el Admin
         errors = {}
         
-        # Validar disponibilidad del libro
         if not self.pk and not self.libro.disponible:
             errors['libro'] = 'El libro no está disponible para préstamo.'
         
-        # Validar límite de préstamos
         if not self.pk and Prestamo.libros_prestados_por_usuario(self.usuario) >= MAX_LIBROS_POR_USUARIO:
             errors['usuario'] = 'El usuario ya alcanzó el límite de préstamos permitidos.'
-        
-        # Validar fecha de devolución esperada
-        # Solo se considera inválida si la fecha ya pasó y el préstamo aún no fue devuelto
-        if (
-            self.fecha_devolucion_esperada
-            and self.fecha_devolucion_esperada < timezone.now().date()
-            and self.fecha_devolucion is None
-        ):
-            errors['fecha_devolucion_esperada'] = 'La fecha de devolución esperada no puede ser en el pasado.'
         
         if errors:
             raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        if not self.pk:  # Solo para nuevos préstamos
-            # Reducir el stock
-            self.libro.stock -= 1
-            # Si el stock llega a 0, marcar como no disponible
-            if self.libro.stock == 0:
-                self.libro.disponible = False
-            self.libro.save()
         super().save(*args, **kwargs)
-
-    def devolver(self):
-        if self.fecha_devolucion:
-            raise ValidationError({'fecha_devolucion': 'El libro ya fue devuelto.'})
-        
-        self.fecha_devolucion = timezone.now().date()
-        # Incrementar el stock y marcar como disponible
-        self.libro.stock += 1
-        self.libro.disponible = True
-        self.libro.save()
-        self.save()

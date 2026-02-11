@@ -1,175 +1,306 @@
-/* Estilos generales */
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --primary-light: rgba(99, 102, 241, 0.1);
+    --secondary: #64748b;
+    --dark: #0f172a;
+    --light: #f8fafc;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --white: #ffffff;
+
+    /* Theme dependent variables */
+    --bg-main: var(--light);
+    --bg-card: var(--white);
+    --bg-accent: #f1f5f9;
+    --text-main: var(--dark);
+    --text-muted: var(--secondary);
+    --border-color: rgba(0, 0, 0, 0.05);
+    --navbar-bg: rgba(255, 255, 255, 0.8);
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+    --bg-main: #020617;
+    --bg-card: #1e293b;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --navbar-bg: rgba(15, 23, 42, 0.8);
+    --light: #0f172a;
+    --white: #1e293b;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+    --bg-accent: #0f172a;
+}
+
 body {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-main);
+    background-color: var(--bg-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-footer {
-    margin-top: auto;
+/* Typography Improvements */
+.tracking-tight {
+    letter-spacing: -0.025em;
 }
 
-/* Estilos para las tarjetas de libros */
-.card {
-    transition: transform 0.2s;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+h1,
+h2,
+h3,
+h4,
+.display-4 {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.card-img-top {
-    border-bottom: 1px solid #eee;
-}
-
-/* Estilos para los dropdowns */
-.dropdown-menu {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-/* Estilos para los botones */
-.btn-primary {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-}
-
-.btn-primary:hover {
-    background-color: #0b5ed7;
-    border-color: #0a58ca;
-}
-
-/* Estilos para la barra de búsqueda */
-.input-group .form-control:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-/* Estilos para los mensajes de alerta */
-.alert {
-    margin-bottom: 1rem;
-}
-
-/* Estilos para el navbar */
-.navbar {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* Glassmorphism Navbar */
+.navbar-glass {
+    background-color: var(--navbar-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 0;
+    z-index: 1030;
 }
 
 .navbar-brand {
-    font-weight: bold;
+    font-size: 1.25rem;
 }
 
-/* Estilos para los formularios */
-.form-select:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-/* Estilos para los iconos */
-.fa-book {
-    color: #6c757d;
-}
-
-/* Estilos para el footer */
-footer {
-    padding: 1rem 0;
-    background-color: #343a40;
-    color: white;
-}
-
-/* Estilos de las tarjetas */
-.card-body {
-    padding: 2rem;
-}
-
-.display-4 {
-    color: #333;
-    margin-bottom: 1rem;
-}
-
-.lead {
-    color: #6c757d;
-}
-
-.list-group-item {
-    border-left: none;
-    border-right: none;
-}
-
-/* Estilos de las tarjetas de libros */
-.libro-card {
-    border: 1px solid #dee2e6;
-    transition: transform 0.2s;
-}
-
-.libro-card:hover {
-    transform: translateY(-5px);
-}
-
-.libro-card .card-title {
-    color: #2c3e50;
-    font-weight: 600;
-}
-
-/* Estilos de las tarjetas de préstamos */
-.prestamo-card {
-    border-left: 4px solid #007bff;
-}
-
-.prestamo-card.devuelto {
-    border-left: 4px solid #28a745;
-    opacity: 0.8;
-}
-
-.btn-prestar {
-    width: 100%;
-    margin-top: 1rem;
-}
-
-/* Estilos de los mensajes */
-.messages {
-    margin-bottom: 2rem;
-}
-
-.error-message {
-    color: #dc3545;
-    margin-top: 5px;
-    font-size: 0.875rem;
-}
-
-.success-message {
-    color: #28a745;
-    margin-top: 5px;
-    font-size: 0.875rem;
-}
-
-#login-section {
-    max-width: 400px;
-    margin: 50px auto;
-}
-
-.section-title {
-    margin-bottom: 20px;
-    color: #333;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 10px;
-}
-
-/* Estilos de los badges */
-.badge {
+.nav-link {
     font-weight: 500;
-    padding: 0.5em 0.75em;
+    color: var(--text-muted);
+    transition: var(--transition);
 }
 
-/* Estilos responsivos */
-@media (max-width: 768px) {
-    .card {
-        margin-bottom: 1rem;
+.nav-link:hover {
+    color: var(--primary);
+}
+
+/* Modern Card Design */
+.card-modern {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+.card-modern:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-modern-header {
+    background-color: var(--primary-light);
+    padding: 1.5rem;
+    border-bottom: none;
+}
+
+/* User Profile & Avatars */
+.btn-user-profile {
+    border: none;
+    background: var(--bg-card);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    color: var(--text-main);
+}
+
+.btn-user-profile:hover {
+    background: var(--primary-light);
+}
+
+.icon-avatar {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+}
+
+/* Improved Buttons & Forms */
+.form-control,
+.form-select {
+    background-color: var(--bg-accent);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1rem;
+    transition: var(--transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--bg-card);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-light);
+    color: var(--text-main);
+}
+
+.input-group-text {
+    background-color: var(--bg-accent);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+}
+
+.btn {
+    padding: 0.6rem 1.25rem;
+    font-weight: 600;
+    transition: var(--transition);
+    border-radius: var(--radius-md);
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.23);
+}
+
+/* Modern Alerts */
+.alert-modern {
+    border-radius: var(--radius-md);
+    border: none;
+    padding: 1rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.alert-modern.alert-success {
+    background-color: #ecfdf5;
+    color: #065f46;
+}
+
+.alert-modern.alert-danger {
+    background-color: #fef2f2;
+    color: #991b1b;
+}
+
+.alert-modern.alert-info {
+    background-color: #eff6ff;
+    color: #1e40af;
+}
+
+/* Dashboard Widgets */
+.stat-card {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    background-color: var(--primary-light);
+    color: var(--primary);
+}
+
+/* List Items with hover */
+.list-group-modern .list-group-item {
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.5rem;
+    transition: var(--transition);
+}
+
+.list-group-modern .list-group-item:hover {
+    background-color: var(--primary-light);
+}
+
+/* Book Cover Styling */
+.bg-accent {
+    background-color: var(--bg-accent) !important;
+}
+
+.bg-accent-subtle {
+    background-color: var(--primary-light) !important;
+}
+
+.table {
+    color: var(--text-main);
+}
+
+.table thead th {
+    background-color: var(--bg-accent);
+    color: var(--text-muted);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--primary-light);
+    color: var(--text-main);
+}
+
+.book-cover-wrapper {
+    position: relative;
+    padding-top: 140%;
+    background: var(--bg-accent);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.book-cover-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
-    
-    .btn-prestar {
-        margin-top: 0.5rem;
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-} 
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Footer modern links */
+.social-links a {
+    transition: var(--transition);
+}
+
+.social-links a:hover {
+    color: var(--primary) !important;
+    opacity: 1 !important;
+    transform: translateY(-2px);
+}

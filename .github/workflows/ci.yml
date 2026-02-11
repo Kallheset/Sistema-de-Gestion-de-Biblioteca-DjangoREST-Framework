@@ -2,63 +2,48 @@ name: Django CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main", "master" ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    
     services:
       mysql:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_db
+          MYSQL_DATABASE: biblioteca_db
+          MYSQL_USER: biblioteca_user
+          MYSQL_PASSWORD: biblioteca_pass
         ports:
           - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-    env:
-      DJANGO_SETTINGS_MODULE: biblioteca.settings
-      DB_ENGINE: django.db.backends.mysql
-      DB_HOST: 127.0.0.1
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: root
-      DB_NAME: test_db
-      SECRET_KEY: super-secret-key-for-ci
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
     - uses: actions/checkout@v4
-
+    
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
-
-    - name: Crear .env.dev para CI
-      run: |
-        echo "SECRET_KEY=super-secret-key-for-ci" > .env.dev
-
-    - name: Install dependencies
+        python-version: "3.12"
+        
+    - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-
-    - name: Wait for MySQL
+        
+    - name: Run Tests
+      env:
+        DEBUG: "1"
+        SECRET_KEY: "ci-secret-key-testing"
+        DB_ENGINE: "django.db.backends.mysql"
+        DB_NAME: "biblioteca_db"
+        DB_USER: "biblioteca_user"
+        DB_PASSWORD: "biblioteca_pass"
+        DB_HOST: "127.0.0.1"
+        DB_PORT: "3306"
       run: |
-        until mysqladmin ping -h127.0.0.1 -uroot -proot --silent; do
-          sleep 1
-        done
-
-    - name: Run migrations
-      run: python manage.py migrate
-
-    - name: Run tests
-      run: python manage.py test
+        pytest

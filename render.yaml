@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: biblioteca-django-drf
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn biblioteca.wsgi:application
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: DJANGO_SETTINGS_MODULE
+        value: biblioteca.settings
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      # Las demás variables (DB_*, CLOUDINARY_*, SECRET_KEY) deben configurarse en el Dashboard de Render

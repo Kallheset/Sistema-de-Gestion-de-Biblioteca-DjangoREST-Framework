@@ -6,9 +6,9 @@ class AutorSerializer(serializers.ModelSerializer):
         model = Autor
         fields = ['id', 'nombre', 'biografia', 'nacionalidad']
         extra_kwargs = {
-            'nombre': {'required': True, 'min_length': 2},
-            'nacionalidad': {'required': True},
-            'biografia': {'required': False, 'allow_blank': True}
+            'nombre': {'required': True, 'min_length': 2, 'help_text': 'Nombre completo del autor'},
+            'nacionalidad': {'required': True, 'help_text': 'País de origen o nacionalidad principal'},
+            'biografia': {'required': False, 'allow_blank': True, 'help_text': 'Breve reseña biográfica o bibliografía'}
         }
 
     def validate_nombre(self, value):

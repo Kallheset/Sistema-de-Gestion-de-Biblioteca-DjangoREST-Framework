@@ -1,126 +1,83 @@
-# Biblioteca Django DRF
+# 📚 Biblioteca Django DRF - Expert-Aligned
 
-Sistema de gestión de biblioteca con Django y Django REST Framework.
+Sistema de gestión de biblioteca profesional desarrollado con **Django 5** y **Django REST Framework**. Este proyecto ha sido optimizado y alineado con estándares de ingeniería de software de alto nivel, incluyendo optimización de consultas, arquitectura de servicios y seguridad avanzada.
 
-## Características principales
-- Gestión de libros, autores, usuarios y préstamos
-- API RESTful documentada
-- Panel de administración
-- Almacenamiento de archivos y avatares en Cloudinary
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://biblioteca-django-drf.onrender.com)
 
-## Requisitos
-- Python 3.11+
-- Docker y Docker Compose
-- Cuenta en Cloudinary
+## 🚀 Características Principales
 
-## Instalación rápida
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/Kallheset/Biblioteca-django-drf.git
-   cd Biblioteca-django-drf-main
-   ```
-2. Copia el archivo `.env.dev` como `.env` y completa tus variables (Cloudinary, DB, etc).
-3. Construye y levanta los servicios:
+### 💎 Excelencia Técnica (Expert Alignment)
+
+- **Optimización de Consultas (N+1)**: Uso estratégico de `select_related` y `prefetch_related` para un rendimiento API superior.
+- **Service Layer Architecture**: Lógica de negocio encapsulada en servicios (`LibroService`, `PrestamoService`), manteniendo las vistas delgadas y testeables.
+- **Gestión de Errores Profesional**: Jerarquía de excepciones personalizada (`BibliotecaBaseError`) para respuestas API consistentes.
+- **API Auto-Documentada**: Enriquecimiento exhaustivo de metadatos con `drf-spectacular` y `help_text`.
+- **Throttling**: Protección integrada contra abuso de la API para usuarios anónimos y autenticados.
+
+### 🛠️ Core Funcional
+
+- **Gestión Completa**: Libros, Autores, Categorías, Préstamos y Usuarios.
+- **Imágenes en la Nube**: Integración completa con **Cloudinary** para portadas y avatares.
+- **Seguridad Pro**: Cabeceras de seguridad de producción (HSTS, Secure Cookies, Clickjacking protection).
+- **Admin Premium**: Panel de administración personalizado y protegido.
+
+## 🛠️ Tecnologías
+
+- **Backend**: Django 5.2.1, DRF 3.16
+- **Base de Datos**: MySQL (Clever Cloud / Local Docker)
+- **Media**: Cloudinary
+- **Servidor Web**: Gunicorn + WhiteNoise (Servicio de estáticos eficiente)
+- **Infraestructura**: Docker, Docker Compose, Render
+
+## 💻 Instalación Local
+
+### Con Docker (Recomendado)
+
+1. Clona el repositorio.
+2. Crea un archivo `.env` basado en `.env.example` con tus credenciales.
+3. Ejecuta:
+
    ```bash
    docker-compose up --build
    ```
-4. Aplica migraciones y crea un superusuario:
+
+4. Aplica las migraciones:
+
    ```bash
    docker-compose exec web python manage.py migrate
-   docker-compose exec web python manage.py createsuperuser
    ```
 
-## Acceso rápido
-- App web: http://localhost:8000/
-- Admin: http://localhost:8000/admin/
-- Documentación API: http://localhost:8000/api/schema/swagger-ui/
+### Sin Docker (Entorno Virtual)
 
-## Integración continua (CI/CD)
+1. Crea un venv: `python -m venv venv`
+2. Instala dependencias: `pip install -r requirements.txt`
+3. Configura tus variables de entorno en un `.env`.
+4. Ejecuta: `python manage.py migrate` y `python manage.py runserver`
 
-Este repositorio incluye integración continua con GitHub Actions:
-- Se ejecutan tests automáticos en cada push y pull request a la rama `main`.
-- El workflow crea una base de datos MySQL temporal y define todas las variables de entorno necesarias, incluyendo `SECRET_KEY`.
-- En CI, también se genera automáticamente un archivo `.env.dev` para asegurar compatibilidad.
+## 🌍 Despliegue en Render
 
-Puedes ver el workflow en `.github/workflows/ci.yml` y el estado de las ejecuciones en la pestaña "Actions" del repositorio: https://github.com/Kallheset/Biblioteca-django-drf/actions
+Este proyecto está pre-configurado para **Render.com** mediante Blueprint (`render.yaml`) y un script de construcción automatizado (`build.sh`).
 
-## Notas
-- Los archivos subidos (avatares, portadas) se almacenan en Cloudinary.
-- Para desarrollo local, la base de datos se ejecuta en MySQL dentro de Docker.
-- Las variables de entorno críticas están en `.env.dev`. En CI/CD, estas variables se definen automáticamente.
+1. Conecta tu repositorio a Render.
+2. Render detectará automáticamente el archivo `render.yaml`.
+3. Configura las variables de entorno en el Dashboard de Render (ver `.env.example`).
+4. El despliegue ejecutará automáticamente migraciones y recolectará estáticos.
+
+## 📖 Documentación de la API
+
+La API está documentada dinámicamente utilizando estándares de **OpenAPI 3.0**:
+
+- **Swagger UI**: `/api/docs/`
+- **Redoc**: `/api/redoc/`
+- **Schema**: `/api/schema/`
+
+## 🔒 Seguridad
+
+- Autenticación JWT y de Sesión.
+- Protección contra fuerza bruta en el login.
+- Cabeceras de seguridad estrictas activas en producción.
+- Permisos granulares por objeto y acción.
 
 ---
 
-Para dudas técnicas, revisa el código fuente o contacta al responsable del repositorio.
-CLOUDINARY_API_KEY=tu_api_key
-CLOUDINARY_API_SECRET=tu_api_secret
-```
-
-## Desarrollo Local
-
-1. Iniciar los contenedores:
-```bash
-docker-compose up
-```
-
-2. Crear superusuario:
-```bash
-docker-compose exec web python manage.py createsuperuser
-```
-
-3. Acceder a la aplicación:
-- Panel de administración: http://localhost:8000/gestor-biblioteca/
-- API Documentation: http://localhost:8000/api/docs/
-
-## Estructura del Proyecto
-
-```
-biblioteca-backend/
-├── apps/
-│   ├── libros/          # Aplicación para gestión de libros
-│   ├── prestamos/       # Aplicación para gestión de préstamos
-│   └── autores/         # Aplicación para gestión de autores
-├── biblioteca/          # Configuración principal del proyecto
-├── templates/           # Plantillas HTML
-├── static/             # Archivos estáticos
-├── Dockerfile          # Configuración de Docker
-├── docker-compose.yml  # Configuración de Docker Compose
-└── requirements.txt    # Dependencias del proyecto
-```
-
-## API Endpoints
-
-- `/api/libros/` - Gestión de libros
-- `/api/categorias/` - Gestión de categorías
-- `/api/prestamos/` - Gestión de préstamos
-- `/api/docs/` - Documentación de la API (Swagger)
-- `/api/redoc/` - Documentación alternativa (ReDoc)
-
-## Seguridad
-
-- Límite de intentos de inicio de sesión (5 intentos)
-- URLs del admin personalizadas
-- Autenticación requerida para la API
-- Protección CSRF
-- Variables de entorno para datos sensibles
-
-## Despliegue
-
-El proyecto está configurado para ser desplegado en Render. Los archivos de configuración incluyen:
-
-- `Dockerfile` para la construcción de la imagen
-- `docker-compose.yml` para la orquestación de contenedores
-- `start.sh` para la inicialización del servicio
-
-## Demo en Producción
-- https://biblioteca-django-drf.onrender.com/
-
-## Autor
-- Desarrollado por Argenis Manzanares — ¡gracias por visitar este proyecto!
-
-
-
-
-
-
-
+Desarrollado con ❤️ por **Argenis Manzanares** — *Elevando el estándar de las aplicaciones Django.*

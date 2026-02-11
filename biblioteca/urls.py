@@ -23,12 +23,19 @@ from rest_framework import permissions
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from apps.libros import views as libros_views
 from apps.prestamos import views as prestamos_views
+from apps.autores.views import AutorViewSet
 from rest_framework.routers import DefaultRouter
 from django.contrib.auth.decorators import login_required
 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 router = DefaultRouter()
 router.register(r'libros', libros_views.LibroViewSet)
-router.register(r'categorias', libros_views.CategoriaViewSet)
+router.register(r'categorias', libros_views.CategoriaViewSet, basename='categoria')
+router.register(r'autores', AutorViewSet, basename='autor')
 router.register(r'prestamos', prestamos_views.PrestamoViewSet, basename='prestamo')
 
 # Cambiar el título del admin
@@ -47,7 +54,9 @@ urlpatterns = [
     
     # URLs de la API
     path('api/', include(router.urls)),
-    path('api/autores/', include('apps.autores.urls')),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # path('api/autores/', include('apps.autores.urls')),  # Eliminado por redundancia
     path('api-auth/', include('rest_framework.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

@@ -57,7 +57,7 @@ class CategoriaViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 class LibroViewSet(viewsets.ModelViewSet):
-    queryset = Libro.objects.all()
+    queryset = Libro.objects.select_related('autor', 'categoria').all()
     serializer_class = LibroSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['disponible', 'categoria', 'autor']
@@ -98,7 +98,7 @@ def lista_libros(request):
         'libros': libros,
         'categorias': categorias,
         'query': query,
-        'categoria_seleccionada': int(categoria_id) if categoria_id else ''
+        'categoria_seleccionada': int(categoria_id) if categoria_id else None
     }
     return render(request, 'libros.html', context)
 
@@ -106,30 +106,11 @@ def lista_libros(request):
 def crear_libro(request):
     if request.method == 'POST':
         try:
-            # Obtener los datos del formulario
-            form_data = request.POST.copy()
-            imagen = request.FILES.get('imagen')
-            
-            # Crear el libro
-            libro = Libro.objects.create(
-                titulo=form_data['titulo'],
-                autor_id=form_data['autor'],
-                categoria_id=form_data['categoria'],
-                isbn=form_data['isbn'],
-                descripcion=form_data.get('descripcion', ''),
-                fecha_publicacion=form_data['fecha_publicacion'],
-                stock=form_data.get('stock', 1)
-            )
-            
-            # Si hay una imagen, guardarla
-            if imagen:
-                libro.imagen = imagen
-                libro.save()
-                
+            libro = LibroService.crear_libro(request.POST, request.FILES.get('imagen'))
             messages.success(request, 'Libro creado exitosamente.')
             return redirect('lista_libros')
-        except ValidationError as e:
-            messages.error(request, str(e))
+        except Exception as e:
+            messages.error(request, f'Error al crear el libro: {str(e)}')
     
     # Obtener autores y categorías para el formulario
     autores = Autor.objects.all()
@@ -140,21 +121,17 @@ def crear_libro(request):
         'categorias': categorias
     })
 
+from apps.prestamos.services import PrestamoService
+from .services import LibroService
+
 @login_required
 def prestar_libro(request, libro_id):
     try:
         libro = Libro.objects.get(id=libro_id)
-        if libro.disponible:
-            dias = int(request.POST.get('dias_prestamo', 7))
-            Prestamo.objects.create(
-                usuario=request.user,
-                libro=libro,
-                fecha_devolucion_esperada=timezone.now().date() + timezone.timedelta(days=dias)
-            )
-            messages.success(request, 'Libro prestado exitosamente.')
-        else:
-            messages.error(request, 'El libro no está disponible.')
-    except (Libro.DoesNotExist, ValidationError, Exception) as e:
+        dias = int(request.POST.get('dias_prestamo', 7))
+        PrestamoService.crear_prestamo(request.user, libro, dias)
+        messages.success(request, 'Libro prestado exitosamente.')
+    except Exception as e:
         messages.error(request, str(e))
     return redirect('lista_libros')
 
@@ -179,19 +156,8 @@ def mis_prestamos(request):
 def devolver_libro(request, prestamo_id):
     try:
         prestamo = Prestamo.objects.get(id=prestamo_id, usuario=request.user)
-        if prestamo.fecha_devolucion:
-            messages.warning(request, 'Este libro ya ha sido devuelto.')
-        else:
-            prestamo.fecha_devolucion = timezone.now().date()
-            prestamo.save()
-            
-            # Marcar el libro como disponible
-            libro = prestamo.libro
-            libro.disponible = True
-            libro.save()
-            
-            messages.success(request, 'Libro devuelto exitosamente.')
-    except Prestamo.DoesNotExist:
-        messages.error(request, 'Préstamo no encontrado.')
-    
+        PrestamoService.devolver_libro(prestamo)
+        messages.success(request, 'Libro devuelto exitosamente.')
+    except Exception as e:
+        messages.error(request, str(e))
     return redirect('lista_prestamos')
