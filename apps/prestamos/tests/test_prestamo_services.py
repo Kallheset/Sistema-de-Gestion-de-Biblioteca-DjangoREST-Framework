@@ -1,5 +1,5 @@
 import pytest
-from django.core.exceptions import ValidationError
+from apps.common.exceptions import BusinessLogicError
 from django.contrib.auth.models import User
 from apps.libros.models import Libro, Categoria
 from apps.autores.models import Autor
@@ -42,7 +42,7 @@ class TestPrestamoService:
         libro.disponible = False
         libro.save()
         
-        with pytest.raises(ValidationError) as exc:
+        with pytest.raises(BusinessLogicError) as exc:
             PrestamoService.crear_prestamo(user, libro)
         assert 'disponible' in str(exc.value)
 
@@ -56,7 +56,7 @@ class TestPrestamoService:
             )
             PrestamoService.crear_prestamo(user, l)
             
-        with pytest.raises(ValidationError) as exc:
+        with pytest.raises(BusinessLogicError) as exc:
             PrestamoService.crear_prestamo(user, libro)
         assert 'límite' in str(exc.value)
 
